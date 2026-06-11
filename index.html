@@ -2674,7 +2674,7 @@
             }
         };
 
-        const dispatchUrl = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/workflow_dispatch.yml/dispatches`;
+        const dispatchUrl = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/deploy.yml/dispatches`;
 
         const res = await fetch(dispatchUrl, {
             method: "POST",
