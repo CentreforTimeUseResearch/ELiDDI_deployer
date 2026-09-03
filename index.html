@@ -1,61 +1,58 @@
 <html>
+
 <head></head>
 
-<script src="actions.js"></script>
+<script src="config.js"></script>
 
 
 <body>
 
-<h1>Hello World</h1>
+    <h1>Hello World</h1>
 
-<input type="text" size="100" id="token"/>
-<button onclick="deploy_eliddi()">Deploy ELiDDi</button>
+    <input type="text" size="100" id="token" />
+    <button onclick="deploy_eliddi()">Deploy ELiDDi</button>
 
-<script>
-    async function deploy_eliddi() {
-        console.log(`ok I'm deploying eliddi!`);
-        // console.log({dispatchUrl, token, payload})
-        const token = document.getElementById('token').value;   // get token from the text input
-        const owner = "centreforTimeUseResearch";
-        const repo = "ELiDDI";
-        
-        if(!token) {
-            console.error('no token!');
-            alert('no token');
-            return;
+    <script>
+        async function deploy_eliddi() {
+            console.log(`ok I'm deploying eliddi!`);
+            // console.log({dispatchUrl, token, payload})
+            const token = document.getElementById('token').value;   // get token from the text input
+            const owner = "centreforTimeUseResearch";
+            const repo = "ELiDDI";
+
+            if (!token) {
+                console.error('no token!');
+                alert('no token');
+                return;
+            }
+
+            const payload = {
+                ref: "main",
+                inputs: {
+                    data: JSON.stringify(config)
+                }
+            };
+
+            const dispatchUrl = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/deploy.yml/dispatches`;
+
+            const res = await fetch(dispatchUrl, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/vnd.github.v3+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+
+            });
+            return res.status;
         }
 
-        const payload = {
-            ref: "main",
-            inputs: {
-                data: JSON.stringify(actions)
-            }
-        };
 
-        const dispatchUrl = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/deploy.yml/dispatches`;
-
-        const res = await fetch(dispatchUrl, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: "application/vnd.github.v3+json",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-
-        });
-        return res.status;
-    }
-
-
-</script>
+    </script>
 
 </body>
 
 
 
 </html>
-
-
-
-
