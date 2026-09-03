@@ -1,4 +1,4 @@
-const actions = {
+const config = {
   "general": {
     "experimentID": "eR8ENvJPgQth",
     "app_name": "O-TUD",
@@ -15,12 +15,45 @@ const actions = {
       "autoscrollSpeed": 32
     }
   },
+  "day_boundary": "04:00",
+  "instructions": [
+    {
+      "title": "Welcome to ELiDDI",
+      "text": "Thank you for your interest in completing the diary, There's just a few simple steps to filling in your details",
+      "spotlight": [50, 50, 100]
+    },
+    {
+      "title": "Select a Timeline",
+      "text": "Use the <strong>timeline picker</strong> to switch timelines. Each timeline records different information about your day. When you switch you will see information about what each timeline is for.",
+      "spotlight": [50, 6, 15]
+    },
+    {
+      "title": "Pick a start time",
+      "text": "Click or tap on the timeline to indicate the start time, you can always adjust this in the next step",
+      "spotlight": [50, 40, 40],
+      "modalTop": "220"
+    },
+    {
+      "title": "Add activity details",
+      "text": "Use the activity picker to fill out the activity details",
+      "spotlight": [50, 70, 35],
+      "modalTop": "-290",
+      "showPanel": "activity"
+    },
+    {
+      "title": "Submit your diary",
+      "text": "Once you've recorded all your activities for the day, click the completed button to complete your diary.",
+      "spotlight": [86, 7, 9]
+    }
+  ],
   "timeline": [
     {
       "name": "Primary activity",
-      "description": "",
+      "description": "What were you doing?",
+      "instruction": "Please select one main activity",
       "mode": "single-choice",
       "min_coverage": "10",
+      "allow_free_text": false,
       "categories": [
         {
           "name": "Personal",
@@ -727,11 +760,7 @@ const actions = {
               "vshort": "bus+",
               "color": "#c0bbb4",
               "subselection": {
-                "questions": [
-                  [
-                    "crowdingPrimary"
-                  ]
-                ]
+                "questions": [["crowdingPrimary"]]
               },
               "childItems": []
             },
@@ -1204,8 +1233,10 @@ const actions = {
     {
       "name": "Secondary activity",
       "description": "If you did something else at the same time, what else did you do?",
+      "instruction": "Please select one main activity",
       "mode": "single-choice",
       "min_coverage": "10",
+      "allow_free_text": true,
       "categories": [
         {
           "name": "Personal",
@@ -1912,11 +1943,7 @@ const actions = {
               "vshort": "bus+",
               "color": "#c0bbb4",
               "subselection": {
-                "questions": [
-                  [
-                    "crowdingPrimary"
-                  ]
-                ]
+                "questions": [["crowdingPrimary"]]
               },
               "childItems": []
             },
@@ -2391,6 +2418,7 @@ const actions = {
       "description": "Where were you?",
       "mode": "single-choice",
       "min_coverage": "0",
+      "allow_free_text": true,
       "categories": [
         {
           "name": " ",
@@ -2511,7 +2539,7 @@ const actions = {
       "min_coverage": "0",
       "categories": [
         {
-          "name": " ",
+          "name": "Alone",
           "activities": [
             {
               "name": "Alone",
@@ -2521,7 +2549,7 @@ const actions = {
           ]
         },
         {
-          "name": " ",
+          "name": "Not Alone",
           "activities": [
             {
               "name": "Spouse / partner",
@@ -2559,7 +2587,7 @@ const actions = {
     },
     {
       "name": "Device",
-      "description": "Were you using a computer/tablet/smartphone?",
+      "description": "Were you using a computer / tablet / smartphone?",
       "mode": "multiple-choice",
       "min_coverage": "0",
       "categories": [
@@ -2634,4 +2662,4 @@ const actions = {
       ]
     }
   ]
-};
+}
