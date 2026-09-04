@@ -1,58 +1,64 @@
-<html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ELiDDI Deployer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="toolbar">
+      <h1>ELiDDI Deployer</h1>
+      <div class="toolbar-actions">
+        <button type="button" id="undo-btn" title="Undo (Ctrl+Z)" disabled>↶ Undo</button>
+        <button type="button" id="redo-btn" title="Redo (Ctrl+Shift+Z)" disabled>↷ Redo</button>
+        <button type="button" id="new-btn">New</button>
+        <button type="button" id="open-btn">Open…</button>
+        <button type="button" id="save-btn">Save</button>
+      </div>
+    </header>
 
-<head></head>
+    <input type="file" id="file-input" accept="application/json,.json" hidden />
 
-<script src="config.js"></script>
+    <p id="schema-banner" class="banner" hidden>
+      Could not load the config schema from the
+      <a href="https://github.com/CentreforTimeUseResearch/ELiDDI" target="_blank" rel="noopener">ELiDDI</a> repo's
+      <code>main</code> branch - this needs network access to <code>raw.githubusercontent.com</code> and, if opened
+      via <code>file://</code>, a local server instead (fetching a local file directly is blocked by the browser).
+      Editing, exporting, and deploying still work without it, just without live validation.
+    </p>
 
+    <nav id="tabs" class="tabs"></nav>
 
-<body>
+    <main id="panels" class="panels"></main>
 
-    <h1>Hello World</h1>
+    <section class="side-panel">
+      <h3>Validation</h3>
+      <div id="validation-results"></div>
 
-    <input type="text" size="100" id="token" />
-    <button onclick="deploy_eliddi()">Deploy ELiDDi</button>
+      <details class="json-preview-details">
+        <summary>Raw JSON preview</summary>
+        <pre id="json-preview"></pre>
+      </details>
 
-    <script>
-        async function deploy_eliddi() {
-            console.log(`ok I'm deploying eliddi!`);
-            // console.log({dispatchUrl, token, payload})
-            const token = document.getElementById('token').value;   // get token from the text input
-            const owner = "centreforTimeUseResearch";
-            const repo = "ELiDDI";
+      <div class="deploy-panel">
+        <h3>Deploy</h3>
+        <p class="hint">
+          Triggers the <code>deploy.yml</code> workflow on the
+          <a href="https://github.com/CentreforTimeUseResearch/ELiDDI" target="_blank" rel="noopener">ELiDDI</a> repo
+          with the config above, publishing it to that repo's GitHub Pages site.
+        </p>
+        <label class="field">
+          <span class="field-label">GitHub personal access token</span>
+          <input type="password" id="deploy-token" autocomplete="off" placeholder="ghp_…" />
+          <small class="hint">Needs the ELiDDI repo's <code>actions:write</code> permission. Used only for this
+            request - never stored or sent anywhere else.</small>
+        </label>
+        <button type="button" id="deploy-btn" class="deploy-btn">Deploy ELiDDI</button>
+        <p id="deploy-status" class="deploy-status"></p>
+      </div>
+    </section>
 
-            if (!token) {
-                console.error('no token!');
-                alert('no token');
-                return;
-            }
-
-            const payload = {
-                ref: "main",
-                inputs: {
-                    data: JSON.stringify(config)
-                }
-            };
-
-            const dispatchUrl = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/deploy.yml/dispatches`;
-
-            const res = await fetch(dispatchUrl, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/vnd.github.v3+json",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-
-            });
-            return res.status;
-        }
-
-
-    </script>
-
-</body>
-
-
-
+    <script type="module" src="app.js"></script>
+  </body>
 </html>
