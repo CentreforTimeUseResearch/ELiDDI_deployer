@@ -16,15 +16,6 @@ const ELIDDI_REPO = 'ELiDDI';
 // which could silently drift from what ELiDDI's build actually validates.
 const SCHEMA_URL = `https://raw.githubusercontent.com/${ELIDDI_OWNER}/${ELIDDI_REPO}/main/config/config.schema.json`;
 
-const DIMENSION_HINTS = [
-  'Read positionally as "Primary activity" by scripts/generate_no_js.js.',
-  'Read positionally as "Secondary activity" by scripts/generate_no_js.js.',
-  'Read positionally as "Location" by scripts/generate_no_js.js.',
-  'Read positionally as "Who" by scripts/generate_no_js.js.',
-  'Read positionally as "Device" by scripts/generate_no_js.js.',
-  'Conventionally "Enjoyment" - not read positionally, order beyond index 4 is not load-bearing.',
-];
-
 const state = {
   config: createBlankConfig(),
   schema: null,
@@ -269,7 +260,11 @@ function renderOnboardingStep(step) {
 function renderTimelineTab() {
   const wrapper = h('div', { class: 'panel' });
   wrapper.append(
-    h('p', { class: 'hint' }, 'Order matters for the first five entries - see the hint under each dimension.'),
+    h(
+      'p',
+      { class: 'hint' },
+      'Order here controls display order in ELiDDI (which dimension shows first, and the picker’s sequence) - no dimension needs to be at a specific position.'
+    ),
     listSection({
       title: 'Dimensions',
       items: state.config.timeline,
@@ -285,10 +280,7 @@ function renderTimelineTab() {
 }
 
 function renderDimension(dim) {
-  const index = () => state.config.timeline.indexOf(dim);
-  const hintEl = h('p', { class: 'hint positional-hint' }, DIMENSION_HINTS[index()] || '');
   return h('div', { class: 'item-fields dimension' }, [
-    hintEl,
     textField('Name', dim.name, (v) => ((dim.name = v), onChange())),
     textField('Description', dim.description, (v) => ((dim.description = v), onChange())),
     textField('Instruction (optional)', dim.instruction, (v) => ((dim.instruction = v || undefined), onChange())),

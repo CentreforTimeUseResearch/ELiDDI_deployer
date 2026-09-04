@@ -156,12 +156,6 @@ legend {
   margin-top: 0.15rem;
 }
 
-.positional-hint {
-  background: var(--bg-alt);
-  padding: 0.35rem 0.5rem;
-  border-radius: 4px;
-}
-
 .color-input {
   display: flex;
   align-items: center;
