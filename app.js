@@ -176,6 +176,12 @@ function renderGeneralTab() {
         g.primary_redirect_url,
         (v) => ((g.primary_redirect_url = v), onChange())
       ),
+      textField(
+        'Submit completed diary URL',
+        g.submit_completed_diary_url,
+        (v) => ((g.submit_completed_diary_url = v), onChange()),
+        { hint: 'Not yet used by ELiDDI itself - reserved for a future diary-submission feature.' }
+      ),
       checkboxField('Fallback to CSV', g.fallbackToCSV, (v) => ((g.fallbackToCSV = v), onChange())),
     ])
   );

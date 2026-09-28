@@ -12,6 +12,7 @@ export function createBlankConfig() {
       language: 'en',
       instructions: true,
       primary_redirect_url: '',
+      submit_completed_diary_url: '',
       fallbackToCSV: true,
       accessibility: {
         enableReducedMotion: false,
