@@ -15,6 +15,7 @@ export function createBlankConfig() {
       submit_completed_diary_url: '',
       fallbackToCSV: true,
       accessibility: {
+        generateHtmlFallback: false,
         enableReducedMotion: false,
         enableHighContrast: false,
         enableForcedColors: false,
