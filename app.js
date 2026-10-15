@@ -190,6 +190,14 @@ function renderGeneralTab() {
     h('fieldset', {}, [
       h('legend', {}, 'Accessibility'),
       checkboxField(
+        'Generate HTML fallback (progressive enhancement)',
+        g.accessibility?.generateHtmlFallback,
+        (v) => ((g.accessibility.generateHtmlFallback = v), onChange()),
+        {
+          hint: 'Generates the full no-JS diary form at build time. Off by default to skip the extra HTML when progressive enhancement isn’t a priority - the JS layer works either way.',
+        }
+      ),
+      checkboxField(
         'Enable reduced motion',
         g.accessibility?.enableReducedMotion,
         (v) => ((g.accessibility.enableReducedMotion = v), onChange())
