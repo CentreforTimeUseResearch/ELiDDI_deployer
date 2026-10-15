@@ -560,6 +560,7 @@ async function deployToELiDDI() {
 
   setDeployStatus('Dispatching…');
   const dispatchUrl = `https://api.github.com/repos/${ELIDDI_OWNER}/${ELIDDI_REPO}/actions/workflows/deploy.yml/dispatches`;
+  const researcherEmail = document.getElementById('researcher-email').value.trim();
 
   try {
     const res = await fetch(dispatchUrl, {
@@ -571,7 +572,7 @@ async function deployToELiDDI() {
       },
       body: JSON.stringify({
         ref: 'main',
-        inputs: { data: JSON.stringify(state.config) },
+        inputs: { data: JSON.stringify(state.config), researcher_email: researcherEmail },
       }),
     });
 

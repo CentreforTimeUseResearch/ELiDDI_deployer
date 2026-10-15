@@ -54,6 +54,12 @@
           <small class="hint">Needs the ELiDDI repo's <code>actions:write</code> permission. Used only for this
             request - never stored or sent anywhere else.</small>
         </label>
+        <label class="field">
+          <span class="field-label">Researcher email (optional)</span>
+          <input type="email" id="researcher-email" autocomplete="off" placeholder="researcher@example.com" />
+          <small class="hint">If set, an email with the live site's URL is sent to this address once the deploy
+            finishes.</small>
+        </label>
         <button type="button" id="deploy-btn" class="deploy-btn">Deploy ELiDDI</button>
         <p id="deploy-status" class="deploy-status"></p>
       </div>
