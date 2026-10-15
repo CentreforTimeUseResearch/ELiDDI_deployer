@@ -39,9 +39,10 @@ the ELiDDI repo. If that URL/path ever moves, update `SCHEMA_URL` in `app.js`.
 stored), validates the current config against the fetched schema (confirming with the user before proceeding if
 there are issues, not hard-blocking), then POSTs to
 `https://api.github.com/repos/CentreforTimeUseResearch/ELiDDI/actions/workflows/deploy.yml/dispatches` with
-`{ ref: "main", inputs: { data: JSON.stringify(state.config) } }` - the editor's live in-memory state, not a file on
-disk. A status line under the button reports the dispatch result (204 = triggered; anything else shows the GitHub
-API's response body).
+`{ ref: "main", inputs: { data: JSON.stringify(state.config), researcher_email: researcherEmail } }` - the editor's
+live in-memory state, not a file on disk. `researcher_email` comes from the optional `#researcher-email` field and is
+sent as `''` when left blank; ELiDDI's `deploy.yml` only sends a completion email when it's non-empty. A status line
+under the button reports the dispatch result (204 = triggered; anything else shows the GitHub API's response body).
 
 Note there are two distinct `deploy.yml` workflows in play: this repo's own `.github/workflows/deploy.yml` (below)
 deploys *this app* to GitHub Pages, while the `deploy.yml` targeted by the fetch call above lives in the separate
