@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-A single-page app (no dependencies, no build step, no tests) for researchers to create and edit an ELiDDI
+A single-page app (no dependencies, no build step; the one pure rule module has `node --test` tests) for researchers to create and edit an ELiDDI
 `config.json` and deploy it - by triggering a `workflow_dispatch` on the `deploy.yml` workflow of the
 [ELiDDI](https://github.com/CentreforTimeUseResearch/ELiDDI) repository via the GitHub REST API, sending it the
 edited config as a JSON payload.
@@ -22,6 +22,7 @@ edited config as a JSON payload.
   collapse list editor (`listSection`) used for every repeatable structure (dimensions, categories, activities,
   child items, onboarding steps, subselection question groups).
 - `model.js` — factories for blank dimensions/categories/activities/etc.
+- `htmlWarnings.js` — advisory (non-blocking) warnings for onboarding step `text`, which ELiDDI renders as unescaped HTML on purpose: flags `<script`, inline `on*=` handlers and `javascript:` URLs. Shown under the validation results; `title` is escaped by ELiDDI, so it is never checked. Tested by `htmlWarnings.test.mjs` - run `node --test` (built into Node, nothing to install).
 - `validator.js` — a ~100-line draft-07 JSON Schema subset, covering only the keywords the real schema uses (not a
   general-purpose engine).
 
