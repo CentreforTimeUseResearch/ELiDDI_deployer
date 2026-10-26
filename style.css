@@ -307,6 +307,12 @@ button.add-btn {
   font-weight: 600;
 }
 
+/* advisory (e.g. unsafe markup in onboarding text): not a schema error */
+.warning {
+  color: #8a5300;
+  font-weight: 600;
+}
+
 .json-preview-details {
   margin-top: 1.25rem;
 }

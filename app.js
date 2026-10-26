@@ -8,6 +8,7 @@ import {
   createBlankOnboardingStep,
 } from './model.js';
 import { validateConfig } from './validator.js';
+import { collectHtmlWarnings } from './htmlWarnings.js';
 
 const ELIDDI_OWNER = 'CentreforTimeUseResearch';
 const ELIDDI_REPO = 'ELiDDI';
@@ -97,13 +98,31 @@ function currentValidationErrors() {
 }
 
 function updateValidation() {
+  validationEl.innerHTML = '';
+  renderSchemaResults();
+  renderHtmlWarnings();
+}
+
+// advisory only: unlike schema errors these do not make the config invalid
+function renderHtmlWarnings() {
+  const warnings = collectHtmlWarnings(state.config);
+  if (warnings.length === 0) return;
+  validationEl.append(
+    h('p', { class: 'warning' }, `${warnings.length} warning${warnings.length === 1 ? '' : 's'}:`),
+    h(
+      'ul',
+      { class: 'error-list' },
+      warnings.map((w) => h('li', {}, [h('code', {}, w.path), ` ${w.message}`]))
+    )
+  );
+}
+
+function renderSchemaResults() {
   if (!state.schema) {
-    validationEl.innerHTML = '';
     validationEl.append(h('p', { class: 'hint' }, 'Schema not loaded - see banner above.'));
     return;
   }
   const errors = currentValidationErrors();
-  validationEl.innerHTML = '';
   if (errors.length === 0) {
     validationEl.append(h('p', { class: 'valid' }, `Valid against config.schema.json`));
     return;
@@ -257,8 +276,12 @@ function renderOnboardingTab() {
 function renderOnboardingStep(step) {
   const spotlight = (step.spotlight ||= [0, 0, 0]);
   return h('div', { class: 'item-fields' }, [
-    textField('Title', step.title, (v) => ((step.title = v), onChange())),
-    textAreaField('Text', step.text, (v) => ((step.text = v), onChange())),
+    textField('Title', step.title, (v) => ((step.title = v), onChange()), {
+      hint: 'Plain text. ELiDDI escapes it, so HTML tags would show as typed.',
+    }),
+    textAreaField('Text', step.text, (v) => ((step.text = v), onChange()), {
+      hint: 'HTML, shown in the diary exactly as written (not escaped). Use tags such as <strong>, <em> and <br>, and close every tag you open. Do not paste markup you do not trust.',
+    }),
     h('div', { class: 'field-row' }, [
       numberField('Spotlight X', spotlight[0], (v) => ((spotlight[0] = v), onChange())),
       numberField('Spotlight Y', spotlight[1], (v) => ((spotlight[1] = v), onChange())),
