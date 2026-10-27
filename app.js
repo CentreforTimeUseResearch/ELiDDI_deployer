@@ -9,6 +9,12 @@ import {
 } from './model.js';
 import { validateConfig } from './validator.js';
 import { collectHtmlWarnings } from './htmlWarnings.js';
+import {
+  VALIDATION_LEVELS,
+  VALIDATION_RULES,
+  getValidationLevel,
+  setValidationLevel,
+} from './validationRules.js';
 
 const ELIDDI_OWNER = 'CentreforTimeUseResearch';
 const ELIDDI_REPO = 'ELiDDI';
@@ -83,6 +89,7 @@ const TABS = [
   { id: 'general', label: 'General', render: renderGeneralTab },
   { id: 'onboarding', label: 'Onboarding', render: renderOnboardingTab },
   { id: 'timeline', label: 'Timeline', render: renderTimelineTab },
+  { id: 'validation', label: 'Validation', render: renderValidationTab },
 ];
 
 let activeTabId = TABS[0].id;
@@ -199,7 +206,9 @@ function renderGeneralTab() {
         'Submit completed diary URL',
         g.submit_completed_diary_url,
         (v) => ((g.submit_completed_diary_url = v), onChange()),
-        { hint: 'Not yet used by ELiDDI itself - reserved for a future diary-submission feature.' }
+        {
+          hint: 'Where a completed diary is sent, as JSON. If empty, ELiDDI shows no "Diary complete" button.',
+        }
       ),
       checkboxField('Fallback to CSV', g.fallbackToCSV, (v) => ((g.fallbackToCSV = v), onChange())),
     ])
@@ -289,6 +298,38 @@ function renderOnboardingStep(step) {
     ]),
     textField('Modal top (optional)', step.modalTop, (v) => ((step.modalTop = v || undefined), onChange())),
     textField('Show panel (optional)', step.showPanel, (v) => ((step.showPanel = v || undefined), onChange())),
+  ]);
+}
+
+// ---- Validation tab ----
+
+function renderValidationTab() {
+  return h('div', { class: 'panel' }, [
+    h('fieldset', {}, [
+      h('legend', {}, 'Validation'),
+      h('p', { class: 'hint' }, [
+        h('strong', {}, 'Hard'),
+        ' checks stop the participant submitting the diary until they pass. ',
+        h('strong', {}, 'Soft'),
+        ' checks ask "are you sure?" but still let them submit. ',
+        h('strong', {}, 'Off'),
+        ' checks are not applied.',
+      ]),
+      h(
+        'p',
+        { class: 'hint' },
+        'Minimum sleep and Some eating or drinking look for activities coded 101 (sleeping) and 104 (eating, drinking) in the Primary and Secondary activity timelines. A study without those activities will always fail them.'
+      ),
+      ...VALIDATION_RULES.map((rule) =>
+        selectField(
+          rule.name,
+          getValidationLevel(state.config, rule.id),
+          VALIDATION_LEVELS,
+          (level) => (setValidationLevel(state.config, rule.id, level), onChange()),
+          { hint: rule.description }
+        )
+      ),
+    ]),
   ]);
 }
 

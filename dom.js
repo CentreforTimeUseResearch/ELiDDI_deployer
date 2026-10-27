@@ -72,15 +72,23 @@ export function checkboxField(label, checked, onChange, opts = {}) {
   ]);
 }
 
-export function selectField(label, value, options, onChange) {
+// options are values, or { value, label } when the text shown differs from the value
+export function selectField(label, value, options, onChange, opts = {}) {
   const select = h(
     'select',
     {},
-    options.map((opt) => h('option', { value: opt, selected: opt === value }, opt))
+    options.map((opt) => {
+      const { value: optValue, label: optLabel } = typeof opt === 'string' ? { value: opt, label: opt } : opt;
+      return h('option', { value: optValue, selected: optValue === value }, optLabel);
+    })
   );
   select.value = value;
   select.addEventListener('change', () => onChange(select.value));
-  return h('label', { class: 'field' }, [h('span', { class: 'field-label' }, label), select]);
+  return h('label', { class: 'field' }, [
+    h('span', { class: 'field-label' }, label),
+    select,
+    opts.hint ? h('small', { class: 'hint' }, opts.hint) : null,
+  ]);
 }
 
 export function colorField(label, value, onChange, opts = {}) {
