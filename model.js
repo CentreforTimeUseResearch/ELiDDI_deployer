@@ -1,3 +1,5 @@
+import { createBlankValidation } from './validationRules.js';
+
 // Factories for new/blank pieces of config.json, kept separate from the
 // rendering code in app.js so the "what does an empty X look like" question
 // has one answer.
@@ -23,6 +25,7 @@ export function createBlankConfig() {
       },
     },
     day_boundary: '04:00',
+    validation: createBlankValidation(),
     instructions: [],
     timeline: [
       createBlankDimension('Primary activity'),
