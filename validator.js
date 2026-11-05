@@ -1,6 +1,6 @@
 // Minimal draft-07 validator covering only the keywords config/config.schema.json
 // actually uses (type, required, properties, items/additionalItems, enum, pattern,
-// minLength, minItems, dependencies, $ref, allOf). Not a general-purpose JSON
+// minLength, minItems, dependencies, $ref, allOf, const, if/then/else). Not a general-purpose JSON
 // Schema engine - deliberately scoped to this one schema so the editor has no
 // runtime dependency on a library like ajv.
 export function validateConfig(schema, data) {
@@ -46,6 +46,20 @@ function validateNode(schema, data, path, root, errors) {
   if (data === undefined) {
     // presence is checked by the parent via `required`, not here
     return;
+  }
+
+  // if/then/else: the `then` (or `else`) rules apply depending on whether the
+  // data matches `if`. The schema uses this to require backend_url when
+  // server_accounts is true. The checks below still run for the other keywords.
+  if (schema.if) {
+    const probe = [];
+    validateNode(schema.if, data, path, root, probe);
+    const branch = probe.length === 0 ? schema.then : schema.else;
+    if (branch) validateNode(branch, data, path, root, errors);
+  }
+
+  if (schema.const !== undefined && data !== schema.const) {
+    errors.push({ path: path || '/', message: `must be ${JSON.stringify(schema.const)}` });
   }
 
   if (schema.type && !checkType(schema.type, data)) {

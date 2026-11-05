@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this project is
 
-A single-page app (no dependencies, no build step; the two pure modules, `htmlWarnings.js` and `validationRules.js`, have `node --test` tests) for researchers to create and edit an ELiDDI
+A single-page app (no dependencies, no build step; the pure modules `htmlWarnings.js`, `validationRules.js`, `serverAccounts.js` and `validator.js` have `node --test` tests) for researchers to create and edit an ELiDDI
 `config.json` and deploy it - by triggering a `workflow_dispatch` on the `deploy.yml` workflow of the
 [ELiDDI](https://github.com/CentreforTimeUseResearch/ELiDDI) repository via the GitHub REST API, sending it the
 edited config as a JSON payload.
@@ -24,8 +24,9 @@ edited config as a JSON payload.
 - `model.js` — factories for blank dimensions/categories/activities/etc.
 - `htmlWarnings.js` — advisory (non-blocking) warnings for onboarding step `text`, which ELiDDI renders as unescaped HTML on purpose: flags `<script`, inline `on*=` handlers and `javascript:` URLs. Shown under the validation results; `title` is escaped by ELiDDI, so it is never checked. Tested by `htmlWarnings.test.mjs` - run `node --test` (built into Node, nothing to install).
 - `validationRules.js` — the four pre-made validation rules ELiDDI ships (id, name, description), and pure helpers to read and set how strictly each is applied: `config.validation` maps a rule id to `off`, `soft` or `hard`, and a rule missing from it is Off. Setting a level writes all four ids and throws for an unknown rule or level. Backs the Validation tab; a new blank config starts with every rule Off. Tested by `validationRules.test.mjs` (`node --test`). The ids and the `validation` shape are defined by ELiDDI's config schema and `src/validation/`, so a new ELiDDI rule needs adding here too.
+- `serverAccounts.js` — the server-accounts settings, `general.server_accounts` (boolean, absent = off) and `general.backend_url` (required when on; the schema enforces it): `isServerAccountsOn`, `setServerAccounts` (turning it off keeps the typed URL), `collectAccountsWarnings` (advisory: an `http://` or localhost backend, and the HTML fallback and submit URL being ignored with accounts) and the `ACCOUNTS_DEPLOY_WARNING` text. Backs the General tab's *Server accounts* box and the warning beside the Deploy button; with accounts on the deploy also asks for confirmation. Tested by `serverAccounts.test.mjs` (`node --test`). Defined by ELiDDI's config schema and `docs/adr/0007-server-sync-model.md`.
 - `validator.js` — a ~100-line draft-07 JSON Schema subset, covering only the keywords the real schema uses (not a
-  general-purpose engine).
+  general-purpose engine). It handles `if`/`then`/`else` and `const`, which the schema uses to require `backend_url` when `server_accounts` is true; tested by `validator.test.mjs`.
 
 ### Schema validation - fetched live, not duplicated
 
