@@ -10,6 +10,12 @@ import {
 import { validateConfig } from './validator.js';
 import { collectHtmlWarnings } from './htmlWarnings.js';
 import {
+  ACCOUNTS_DEPLOY_WARNING,
+  collectAccountsWarnings,
+  isServerAccountsOn,
+  setServerAccounts,
+} from './serverAccounts.js';
+import {
   VALIDATION_LEVELS,
   VALIDATION_RULES,
   getValidationLevel,
@@ -108,11 +114,19 @@ function updateValidation() {
   validationEl.innerHTML = '';
   renderSchemaResults();
   renderHtmlWarnings();
+  updateAccountsDeployWarning();
+}
+
+// beside the Deploy button: publishing does not set up the backend
+function updateAccountsDeployWarning() {
+  const el = document.getElementById('accounts-deploy-warning');
+  el.hidden = !isServerAccountsOn(state.config);
+  el.textContent = ACCOUNTS_DEPLOY_WARNING;
 }
 
 // advisory only: unlike schema errors these do not make the config invalid
 function renderHtmlWarnings() {
-  const warnings = collectHtmlWarnings(state.config);
+  const warnings = [...collectHtmlWarnings(state.config), ...collectAccountsWarnings(state.config)];
   if (warnings.length === 0) return;
   validationEl.append(
     h('p', { class: 'warning' }, `${warnings.length} warning${warnings.length === 1 ? '' : 's'}:`),
@@ -207,10 +221,35 @@ function renderGeneralTab() {
         g.submit_completed_diary_url,
         (v) => ((g.submit_completed_diary_url = v), onChange()),
         {
-          hint: 'Where a completed diary is sent, as JSON. If empty, ELiDDI shows no "Diary complete" button.',
+          hint: 'Where a completed diary is sent, as JSON. If empty, ELiDDI shows no "Diary complete" button. Ignored when server accounts are on: the diary then goes to the backend.',
         }
       ),
       checkboxField('Fallback to CSV', g.fallbackToCSV, (v) => ((g.fallbackToCSV = v), onChange())),
+    ])
+  );
+
+  wrapper.append(
+    h('fieldset', {}, [
+      h('legend', {}, 'Server accounts'),
+      checkboxField(
+        'Respondents log in to a backend (server accounts)',
+        isServerAccountsOn(state.config),
+        (v) => {
+          setServerAccounts(g, v);
+          onChange();
+          renderActivePanel(); // shows or hides the backend URL
+        },
+        {
+          hint: 'ELiDDI-specific extension. A Respondent can start a diary on one device and finish it on another, with the diary kept on an ELiDDI backend server. Off by default: the diary then lives only in the Respondent’s browser. You must have a correctly configured backend; see the ELiDDI_backend repository.',
+        }
+      ),
+      isServerAccountsOn(state.config)
+        ? textField('Backend URL', g.backend_url, (v) => ((g.backend_url = v.trim()), onChange()), {
+            type: 'url',
+            placeholder: 'https://diary.example.org',
+            hint: 'Base address of the backend, starting with https:// (a path is allowed, a trailing slash does not matter).',
+          })
+        : null,
     ])
   );
 
@@ -613,6 +652,8 @@ async function deployToELiDDI() {
     setDeployStatus('Enter a GitHub personal access token first.', 'invalid');
     return;
   }
+
+  if (isServerAccountsOn(state.config) && !confirm(`${ACCOUNTS_DEPLOY_WARNING}\n\nDeploy anyway?`)) return;
 
   const errors = currentValidationErrors();
   if (errors.length > 0) {
